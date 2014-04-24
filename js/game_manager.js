@@ -30,6 +30,14 @@ function GameManager(size, InputManager, Actuator) {
   this.setup();
 }
 
+GameManager.prototype.genGuid = function () {
+    var id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+    });
+    return id;
+}
+
 // Restart the game
 GameManager.prototype.restart = function () {
   this.actuator.restart();
@@ -47,6 +55,7 @@ GameManager.prototype.setup = function () {
 
   this.score        = 0;
   this.turns        = 0;
+  this.guid         = this.genGuid();
   this.over         = false;
   this.won          = false;
 
@@ -99,8 +108,8 @@ GameManager.prototype.run = function() {
           self.run();
         }, timeout);
       } else {
-        console.log("Run: " + this.runs + " Score: " + this.score + " Turns: " + this.turns );
-        this.websocket.send("Run: " + this.runs + " Score: " + this.score + " Turns: " + this.turns );
+        console.log("Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns );
+        this.websocket.send("Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns );
         this.runs += 1;
         if ( this.runs < timesToRunExperiment) {
             this.restart();
