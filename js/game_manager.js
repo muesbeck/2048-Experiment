@@ -2,7 +2,7 @@ function GameManager(size, InputManager, Actuator) {
   this.size         = size; // Size of the grid
   this.inputManager = new InputManager;
   this.actuator     = new Actuator;
-  this.websocket    = new WebSocketManager;
+  this.logsender    = new LogSender;
   this.runs         = 0;
   this.isRandomRound = 0;
   this.randomer     = new Randomer();
@@ -77,10 +77,10 @@ GameManager.prototype.actuate = function () {
     if (this.over || this.won) {
         if (this.isRandomRound) {
             console.log("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
-            this.websocket.send("Date: " + new Date() + " ;Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
+            this.logsender.send("Date: " + new Date() + " ;Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
         } else {
             console.log("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
-            this.websocket.send("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
+            this.logsender.send("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
         }
         this.runs += 1;
         if ( this.runs < timesToRunExperiment) {

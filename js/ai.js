@@ -134,7 +134,6 @@ AI.prototype.iterativeDeep = function() {
     }
     depth++;
   } while ( (new Date()).getTime() - start < minSearchTime);
-  console.log ((new Date()).getTime() - start);
   //console.log('depth', --depth);
   //console.log(this.translate(best.move));
   //console.log(best);
