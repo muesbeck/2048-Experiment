@@ -6,6 +6,7 @@ function GameManager(size, InputManager, Actuator) {
   this.runs         = 0;
   this.isRandomRound = 0;
   this.randomer     = new Randomer();
+  this.startTime    = (new Date()).getTime();
 
 
   this.running      = false;
@@ -75,20 +76,21 @@ GameManager.prototype.setup = function () {
 GameManager.prototype.actuate = function () {
     if (this.over || this.won) {
         if (this.isRandomRound) {
-            console.log("Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
-            this.websocket.send("Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+            console.log("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
+            this.websocket.send("Date: " + new Date() + " ;Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
         } else {
-            console.log("Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
-            this.websocket.send("Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+            console.log("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
+            this.websocket.send("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
         }
         this.runs += 1;
         if ( this.runs < timesToRunExperiment) {
-            if (runs % 2 == 0) {
+            if (this.runs % 2 == 0) {
                 this.isRandomRound = 0;
             } else {
                 this.isRandomRound = 1;
             }
             this.restart();
+            this.startTime = (new Date()).getTime();
             this.runNow();
         }
       } else {

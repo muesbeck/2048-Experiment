@@ -5,15 +5,15 @@ Randomer.prototype.getBest = function() {
     function rndmK() {
         var i = Math.random()
         if (i <= 0.25){
-               return 37;
+               return 0;
         } else {
             if (i <= 0.5) {
-               return 38;
+               return 1;
             } else {
                 if (i <=0.75) {
-                  return 39;
+                  return 2;
                  } else {
-                  return 40;
+                  return 3;
                  }
             }
         } 
