@@ -1,5 +1,5 @@
-animationDelay = 100;
-minSearchTime = 100;
+animationDelay = 1;
+minSearchTime = 50;
 timesToRunExperiment = 100;
 
 // Wait till the browser is ready to render the game (avoids glitches)

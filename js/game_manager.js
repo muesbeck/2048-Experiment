@@ -66,11 +66,20 @@ GameManager.prototype.setup = function () {
 
 // Sends the updated grid to the actuator
 GameManager.prototype.actuate = function () {
-  this.actuator.actuate(this.grid, {
-    score: this.score,
-    over:  this.over,
-    won:   this.won
-  });
+    if (this.over) {
+        this.websocket.send("Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+        this.runs += 1;
+        if ( this.runs < timesToRunExperiment) {
+            this.restart();
+        }
+      } else {
+
+      this.actuator.actuate(this.grid, {
+        score: this.score,
+        over:  this.over,
+        won:   this.won
+      }); 
+  }
 };
 
 // makes a given move and updates state
@@ -99,7 +108,6 @@ GameManager.prototype.move = function(direction) {
 // moves continuously until game is over
 GameManager.prototype.run = function() {
       var best = this.ai.getBest();
-      console.log(best.move);
       this.move(best.move);
       var timeout = animationDelay;
       if (this.running && !this.over && !this.won) {
@@ -107,12 +115,6 @@ GameManager.prototype.run = function() {
         setTimeout(function(){
           self.run();
         }, timeout);
-      } else {
-        console.log("Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns );
-        this.websocket.send("Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns );
-        this.runs += 1;
-        if ( this.runs < timesToRunExperiment) {
-            this.restart();
-        }
       }
+     
 }
