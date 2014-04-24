@@ -2,6 +2,8 @@ function GameManager(size, InputManager, Actuator) {
   this.size         = size; // Size of the grid
   this.inputManager = new InputManager;
   this.actuator     = new Actuator;
+  this.websocket    = new WebSocketManager;
+  this.runs         = 0;
 
   this.running      = false;
 
@@ -20,7 +22,7 @@ function GameManager(size, InputManager, Actuator) {
       this.actuator.setRunButton('Auto-run');
     } else {
       this.running = true;
-      this.run()
+      this.run();
       this.actuator.setRunButton('Stop');
     }
   }.bind(this));
@@ -44,6 +46,7 @@ GameManager.prototype.setup = function () {
   this.ai           = new AI(this.grid);
 
   this.score        = 0;
+  this.turns        = 0;
   this.over         = false;
   this.won          = false;
 
@@ -65,6 +68,7 @@ GameManager.prototype.actuate = function () {
 GameManager.prototype.move = function(direction) {
   var result = this.grid.move(direction);
   this.score += result.score;
+  this.turns += 1;
 
   if (!result.won) {
     if (result.moved) {
@@ -85,13 +89,21 @@ GameManager.prototype.move = function(direction) {
 
 // moves continuously until game is over
 GameManager.prototype.run = function() {
-  var best = this.ai.getBest();
-  this.move(best.move);
-  var timeout = animationDelay;
-  if (this.running && !this.over && !this.won) {
-    var self = this;
-    setTimeout(function(){
-      self.run();
-    }, timeout);
-  }
+      var best = this.ai.getBest();
+      console.log(best.move);
+      this.move(best.move);
+      var timeout = animationDelay;
+      if (this.running && !this.over && !this.won) {
+        var self = this;
+        setTimeout(function(){
+          self.run();
+        }, timeout);
+      } else {
+        console.log("Run: " + this.runs + " Score: " + this.score + " Turns: " + this.turns );
+        this.websocket.send("Run: " + this.runs + " Score: " + this.score + " Turns: " + this.turns );
+        this.runs += 1;
+        if ( this.runs < timesToRunExperiment) {
+            this.restart();
+        }
+      }
 }
