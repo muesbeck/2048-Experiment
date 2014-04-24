@@ -4,6 +4,9 @@ function GameManager(size, InputManager, Actuator) {
   this.actuator     = new Actuator;
   this.websocket    = new WebSocketManager;
   this.runs         = 0;
+  this.isRandomRound = 0;
+  this.randomer     = new Randomer();
+
 
   this.running      = false;
 
@@ -17,7 +20,14 @@ function GameManager(size, InputManager, Actuator) {
 
 
   this.inputManager.on('run', function() {
-    if (this.running) {
+    this.runNow();
+  }.bind(this));
+
+  this.setup();
+}
+
+GameManager.prototype.runNow = function () {
+     if (this.running) {
       this.running = false;
       this.actuator.setRunButton('Auto-run');
     } else {
@@ -25,9 +35,6 @@ function GameManager(size, InputManager, Actuator) {
       this.run();
       this.actuator.setRunButton('Stop');
     }
-  }.bind(this));
-
-  this.setup();
 }
 
 GameManager.prototype.genGuid = function () {
@@ -52,7 +59,7 @@ GameManager.prototype.setup = function () {
   this.grid.addStartTiles();
 
   this.ai           = new AI(this.grid);
-
+ 
   this.score        = 0;
   this.turns        = 0;
   this.guid         = this.genGuid();
@@ -66,11 +73,23 @@ GameManager.prototype.setup = function () {
 
 // Sends the updated grid to the actuator
 GameManager.prototype.actuate = function () {
-    if (this.over) {
-        this.websocket.send("Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+    if (this.over || this.won) {
+        if (this.isRandomRound) {
+            console.log("Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+            this.websocket.send("Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+        } else {
+            console.log("Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+            this.websocket.send("Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won);
+        }
         this.runs += 1;
         if ( this.runs < timesToRunExperiment) {
+            if (runs % 2 == 0) {
+                this.isRandomRound = 0;
+            } else {
+                this.isRandomRound = 1;
+            }
             this.restart();
+            this.runNow();
         }
       } else {
 
@@ -107,7 +126,11 @@ GameManager.prototype.move = function(direction) {
 
 // moves continuously until game is over
 GameManager.prototype.run = function() {
-      var best = this.ai.getBest();
+      if (this.isRandomRound < 1) {
+        var best = this.ai.getBest();
+      } else { 
+        var best = this.randomer.getBest();
+      }
       this.move(best.move);
       var timeout = animationDelay;
       if (this.running && !this.over && !this.won) {
