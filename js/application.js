@@ -1,6 +1,6 @@
 animationDelay = 1;
 minSearchTime = 50;
-timesToRunExperiment = 200;
+timesToRunExperiment = 1000;
 
 // Wait till the browser is ready to render the game (avoids glitches)
 window.requestAnimationFrame(function () {
