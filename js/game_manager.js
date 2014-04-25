@@ -74,14 +74,14 @@ GameManager.prototype.setup = function () {
 
 // Sends the updated grid to the actuator
 GameManager.prototype.actuate = function () {
-    if (this.runs < timesToRunExperiment + 1 && (this.over || this.won) ) {
+    if (this.runs <= timesToRunExperiment && (this.over || this.won) ) {
         if (this.isRandomRound == 0) {
             this.logsender.send("Date: " + new Date() + " ;Type: AI ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
         } else {
             this.logsender.send("Date: " + new Date() + " ;Type: RND ;Guid: " + this.guid +  " ;Run: " + this.runs + " ;Score: " + this.score + " ;Turns: " + this.turns + " ;WonStatus: " + this.won + " ;TimeTaken: " + ((new Date()).getTime() - this.startTime));
         }
         this.runs += 1;
-        if ( this.runs < timesToRunExperiment) {
+        if ( this.runs <= timesToRunExperiment) {
             if (this.runs % 2 == 0) {
                 this.isRandomRound = 0;
             } else {
