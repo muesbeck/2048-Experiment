@@ -45,7 +45,8 @@ def parseLines(lines):
                     lineString += handle_last_split(smi)
             # Only print if full line
             if nrP == 6:
-                print lineString 
+                printable = lineString.replace('\n', '')
+                print printable
 
 def handle_date(smi):
     return ""
@@ -60,7 +61,7 @@ def handle_easy_split(smi):
 def handle_last_split(smi):
     tmp = smi.split(' ')
     if len(tmp) >= 2:
-        return tmp[1][:len(tmp[1])-1] 
+        return tmp[1]
     else:
         return 'xxxxxx'
 
