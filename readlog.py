@@ -4,6 +4,7 @@ import sys
 
 colorred = "\033[01;42m{0}\033[00m"
 colorgrn = "\033[1;36m{0}\033[00m"
+guids = []
 
 def readFile(filename):
     try:
@@ -24,6 +25,7 @@ def parseLines(lines):
             tmp = s.split(";")
             lineString = str(count) + ';'
             nrP = 0
+            duplicate = False
             for smi in tmp:
                 if smi.startswith( 'Date:' ):
                     nrP += 1
@@ -31,6 +33,9 @@ def parseLines(lines):
                 elif smi.startswith( 'Type:' ):
                     nrP += 1
                     lineString += handle_easy_split(smi)
+                elif smi.startswith( 'Guid:' ):
+                    if handle_guid(smi):
+                        duplicate = True
                 elif smi.startswith( 'Score:' ):
                     nrP += 1
                     lineString += handle_easy_split(smi)
@@ -44,7 +49,7 @@ def parseLines(lines):
                     nrP += 1
                     lineString += handle_last_split(smi)
             # Only print if full line
-            if nrP == 6:
+            if nrP == 6 and not duplicate:
                 printable = lineString.replace('\n', '')
                 print printable
 
@@ -64,6 +69,15 @@ def handle_last_split(smi):
         return tmp[1]
     else:
         return 'xxxxxx'
+
+def handle_guid(smi):
+    tmp = smi.split(' ')
+    if len(tmp) >= 2:
+        if tmp[1] in guids:
+            return True
+        else:
+            guids.append(tmp[1])
+    return False
 
 if len(sys.argv) > 1:
     lines = readFile(sys.argv[1])
